@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
+import { CollectionsModule } from './collections/collections.module';
 
 @Module({
   imports: [
@@ -22,7 +24,8 @@ import { CategoriesModule } from './categories/categories.module';
       synchronize: process.env.NODE_ENV !== 'production'
     }),
     UsersModule,
-    CategoriesModule
+    CategoriesModule,
+    CollectionsModule
   ],
   controllers: [AppController],
   providers: [AppService],
