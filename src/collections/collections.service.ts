@@ -53,8 +53,8 @@ export class CollectionsService {
   }
 
   async remove(id: number) {
-    const category = await this.findOne(id);
+    const collection = await this.findOne(id);
     
-    return this.collectionRepository.remove(category);
+    return this.collectionRepository.remove(collection);
   }
 }

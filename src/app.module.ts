@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CollectionsModule } from './collections/collections.module';
+import { PrintsModule } from './prints/prints.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { CollectionsModule } from './collections/collections.module';
     }),
     UsersModule,
     CategoriesModule,
-    CollectionsModule
+    CollectionsModule,
+    PrintsModule
   ],
   controllers: [AppController],
   providers: [AppService],

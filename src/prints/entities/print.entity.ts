@@ -1,18 +1,27 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('collections')
-export class Collection {
-    @PrimaryGeneratedColumn()
-    collection_id: number;
+export enum PrintType {
+  ANIME = 'anime',
+  GEEK = 'geek',
+  EXCLUSIVA = 'exclusiva',
+}
 
-    @Column({ type: 'varchar', length: 255, unique: true })
+@Entity('prints')
+export class Print {
+    @PrimaryGeneratedColumn()
+    print_id: number;
+
+    @Column({ type: 'varchar', length: 255 })
     name: string;
     
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    image_url: string;
+    @Column({ type: 'varchar', length: 10, unique: true })
+    code: string;
     
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    logo_url: string;
+    @Column({ type: 'varchar', length: 255 })
+    image_url: string;
+
+    @Column({ type: 'enum', enum: PrintType})
+    type: PrintType;
 
     @CreateDateColumn({
         type: 'datetime',
@@ -28,5 +37,4 @@ export class Collection {
         onUpdate: 'CURRENT_TIMESTAMP(3)',
     })
     updated_at: Date;
-
 }
