@@ -10,6 +10,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { PrintsModule } from './prints/prints.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CartsModule } from './carts/carts.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { CartsModule } from './carts/carts.module';
     CollectionsModule,
     PrintsModule,
     ReviewsModule,
-    CartsModule
+    CartsModule,
+    ProductsModule
   ],
   controllers: [AppController],
   providers: [AppService],
