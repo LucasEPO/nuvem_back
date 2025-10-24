@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -24,6 +24,21 @@ export class UsersService {
 
   findAll() {
     return this.userRepository.find();
+  }
+
+  async findOne(user_id: string): Promise<User> {
+    //verificar se crio outra funcao para qnd uuid vem convertido ja
+    const idBuffer = Buffer.from(user_id.replace(/-/g, ''), 'hex');
+
+    const user = await this.userRepository.findOne({
+      where: { user_id: idBuffer },
+    });
+
+    if (!user) 
+      throw new NotFoundException(`Usuário com ID ${user_id} não encontrado.`);
+    
+
+    return user;
   }
 
   findOneByEmail(email: string) {

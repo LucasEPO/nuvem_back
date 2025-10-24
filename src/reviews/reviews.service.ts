@@ -4,15 +4,23 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ReviewsService {
   constructor(
     @InjectRepository(Review)
     private readonly reviewRepository: Repository<Review>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createReviewDto: CreateReviewDto) {
+    //verificar uso do uuid se precisa ser convertido
+    const user = await this.usersService.findOne(createReviewDto.fk_review_user);
+    
+    if (!user) 
+      throw new NotFoundException(`Usuário com id ${createReviewDto.fk_review_user} não encontrado.`);
+
     const review = this.reviewRepository.create(createReviewDto);
 
     return await this.reviewRepository.save(review);

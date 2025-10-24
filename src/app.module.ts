@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { CollectionsModule } from './collections/collections.module';
 import { PrintsModule } from './prints/prints.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ReviewsModule } from './reviews/reviews.module';
     CategoriesModule,
     CollectionsModule,
     PrintsModule,
-    ReviewsModule
+    ReviewsModule,
+    CartsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,6 @@
+import { Cart } from 'src/carts/entities/cart.entity';
 import { Review } from 'src/reviews/entities/review.entity';
-import { Entity, PrimaryColumn, Column, CreateDateColumn, BeforeInsert, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, BeforeInsert, OneToMany, OneToOne } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity('users')
@@ -25,6 +26,9 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
 
   // Converte UUID string → binário (para compatibilidade com UUID_TO_BIN)
   @BeforeInsert()
