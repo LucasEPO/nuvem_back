@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
+import { SignInDto } from './dto/signIn.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -8,8 +10,9 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  @ApiBody({type: SignInDto})
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.signIn(signInDto.login, signInDto.password);
   }
 
   @UseGuards(AuthGuard)

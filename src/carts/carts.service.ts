@@ -36,7 +36,7 @@ export class CartsService {
     return cart;
   }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
+  update(id: string, updateCartDto: UpdateCartDto) {
     //verificar como lidar com uuid
     return `This action updates a #${id} cart`;
   }
