@@ -11,6 +11,7 @@ import { PrintsModule } from './prints/prints.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CartsModule } from './carts/carts.module';
 import { ProductsModule } from './products/products.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { ProductsModule } from './products/products.module';
     PrintsModule,
     ReviewsModule,
     CartsModule,
-    ProductsModule
+    ProductsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
