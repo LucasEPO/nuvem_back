@@ -1,12 +1,11 @@
 import { Cart } from 'src/carts/entities/cart.entity';
 import { Review } from 'src/reviews/entities/review.entity';
-import { Entity, PrimaryColumn, Column, CreateDateColumn, BeforeInsert, OneToMany, OneToOne } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { Entity, Column, CreateDateColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
-  @PrimaryColumn({ type: 'binary', length: 16 })
-  user_id: Buffer;
+  @PrimaryGeneratedColumn('uuid')
+  user_id: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -29,13 +28,4 @@ export class User {
 
   @OneToOne(() => Cart, (cart) => cart.user)
   cart: Cart;
-
-  // Converte UUID string → binário (para compatibilidade com UUID_TO_BIN)
-  @BeforeInsert()
-  generateId() {
-    if (!this.user_id) {
-      const uuid = uuidv4().replace(/-/g, '');
-      this.user_id = Buffer.from(uuid, 'hex');
-    }
-  }
 }

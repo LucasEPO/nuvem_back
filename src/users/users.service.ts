@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -14,45 +14,54 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const existing = await this.userRepository.findOne({
+      where: { email: createUserDto.email } 
+    });
+
+    if (existing) 
+      throw new BadRequestException('E-mail já está em uso');
+
     const password_hash = await bcrypt.hash(createUserDto.password, 10);
+
     const user = this.userRepository.create({
       ...createUserDto,
       password_hash,
     });
-    return this.userRepository.save(user);
+
+    return await this.userRepository.save(user);
   }
 
-  findAll() {
-    return this.userRepository.find();
+  async findAll() {
+    return await this.userRepository.find();
   }
 
   async findOne(user_id: string): Promise<User> {
-    //verificar se crio outra funcao para qnd uuid vem convertido ja
-    const idBuffer = Buffer.from(user_id.replace(/-/g, ''), 'hex');
-
     const user = await this.userRepository.findOne({
-      where: { user_id: idBuffer },
+      where: { user_id: user_id },
     });
 
     if (!user) 
       throw new NotFoundException(`Usuário com ID ${user_id} não encontrado.`);
     
-
     return user;
   }
 
-  findOneByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+  async findOneByEmail(email: string) {
+    return await this.userRepository.findOne({ where: { email } });
   }
 
   async updateByEmail(email: string, updateUserDto: UpdateUserDto) {
     await this.userRepository.update({ email }, updateUserDto);
-    return this.userRepository.findOne({ where: { email } });
+
+    return await this.userRepository.findOne({ where: { email } });
   }
 
   async removeByEmail(email: string) {
     const user = await this.findOneByEmail(email);
-    if (user) await this.userRepository.remove(user);
+
+    if (user) 
+      await this.userRepository.remove(user);
+
     return user;
   }
 }
