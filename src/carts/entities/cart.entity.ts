@@ -1,5 +1,6 @@
+import { CartItem } from "src/cart_itens/entities/cart_item_entity";
 import { User } from "src/users/entities/user.entity";
-import { BeforeInsert, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity('carts')
@@ -25,6 +26,9 @@ export class Cart {
     @OneToOne(() => User, (user) => user.cart, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'fk_cart_user' })
     user: User;
+
+    @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
+    cart_itens: CartItem[];
 
     // Converte UUID string → binário (para compatibilidade com UUID_TO_BIN)
     @BeforeInsert()

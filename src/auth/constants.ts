@@ -1,3 +1,8 @@
+
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export const jwtConstants = {
-  secret: 'SAFE VALUE',
+  secret: process.env.JWT_SECRET,
 };

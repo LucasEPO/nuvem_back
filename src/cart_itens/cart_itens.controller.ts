@@ -1,14 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CartItensService } from './cart_itens.service';
-import { CreateCartItenDto } from './dto/create-cart_iten.dto';
-import { UpdateCartItenDto } from './dto/update-cart_iten.dto';
+import { CreateCartItemDto } from './dto/create-cart_item.dto';
+import { UpdateCartItemDto } from './dto/update-cart_item.dto';
 
 @Controller('cart-itens')
 export class CartItensController {
   constructor(private readonly cartItensService: CartItensService) {}
 
   @Post()
-  create(@Body() createCartItenDto: CreateCartItenDto) {
+  create(@Body() createCartItenDto: CreateCartItemDto) {
     return this.cartItensService.create(createCartItenDto);
   }
 
@@ -23,7 +23,7 @@ export class CartItensController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCartItenDto: UpdateCartItenDto) {
+  update(@Param('id') id: string, @Body() updateCartItenDto: UpdateCartItemDto) {
     return this.cartItensService.update(+id, updateCartItenDto);
   }
 

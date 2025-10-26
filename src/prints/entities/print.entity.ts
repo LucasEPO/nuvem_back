@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CartItem } from "src/cart_itens/entities/cart_item_entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum PrintType {
   ANIME = 'anime',
@@ -37,4 +38,7 @@ export class Print {
         onUpdate: 'CURRENT_TIMESTAMP(3)',
     })
     updated_at: Date;
+
+    @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
+    cart_itens: CartItem[];
 }
