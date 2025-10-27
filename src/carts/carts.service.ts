@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from './entities/cart.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class CartsService {
@@ -13,36 +14,52 @@ export class CartsService {
     private readonly cartRepository: Repository<Cart>,
     private readonly usersService: UsersService,
   ) {}
+
   async create(createCartDto: CreateCartDto) {
-    //verificar como trata uuid, se entra como buffer aq e converte depois ou se aq ele ja esta convertido
-    return 'This action adds a new cart';
+    const user = await this.usersService.findOne(createCartDto.fk_cart_user);
+    
+    if (!user)
+      throw new NotFoundException('Usuário não encontrado');
+
+    const cart = this.cartRepository.create({user});
+    return await this.cartRepository.save(cart);
   }
 
   async findAll() {
     return await this.cartRepository.find();
   }
 
-  async findOne(cart_id: string) {
-    const cartIdBuffer = Buffer.from(cart_id.replace(/-/g, ''), 'hex');
-
+  async findOne(id: string) {
     const cart = await this.cartRepository.findOne({
-      where: { cart_id: cartIdBuffer },
+      where: { cart_id: id }
     });
 
-    if (!cart) {
-      throw new NotFoundException(`Carrinho ${cart_id} não encontrado`);
-    }
+    if(!cart)
+      throw new NotFoundException(`Carrinho #${id} não encontrado`);
 
     return cart;
   }
 
-  update(id: string, updateCartDto: UpdateCartDto) {
-    //verificar como lidar com uuid
-    return `This action updates a #${id} cart`;
+  async update(id: string, updateCartDto: UpdateCartDto) {
+    await this.findOne(id);
+
+    const updateData: Partial<Cart> = {};
+
+    if (updateCartDto.fk_cart_user) {
+      const newUser = await this.usersService.findOne(updateCartDto.fk_cart_user);
+      if (!newUser) 
+        throw new NotFoundException('Usuário não encontrado');
+
+      updateData['fk_cart_user'] = updateCartDto.fk_cart_user;
+    }
+
+    await this.cartRepository.update(id, updateData);
+
+    return this.findOne(id);
   }
 
-  async remove(cart_id: string) {
-    const cart = await this.findOne(cart_id);
+  async remove(id: string) {
+    const cart = await this.findOne(id);
     return await this.cartRepository.remove(cart);
   }
 }

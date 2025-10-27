@@ -1,12 +1,12 @@
 import { CartItem } from "src/cart_itens/entities/cart_item_entity";
 import { User } from "src/users/entities/user.entity";
-import { BeforeInsert, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
-import { v4 as uuidv4 } from 'uuid';
+import { CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
 
 @Entity('carts')
 export class Cart {
-    @PrimaryColumn({ type: 'binary', length: 16 })
-    cart_id: Buffer;
+    @PrimaryGeneratedColumn('uuid')
+    cart_id: string;
 
     @CreateDateColumn({
         type: 'datetime',
@@ -30,12 +30,4 @@ export class Cart {
     @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
     cart_itens: CartItem[];
 
-    // Converte UUID string → binário (para compatibilidade com UUID_TO_BIN)
-    @BeforeInsert()
-    generateId() {
-        if (!this.cart_id) {
-            const uuid = uuidv4().replace(/-/g, '');
-            this.cart_id = Buffer.from(uuid, 'hex');
-        }
-    }
 }
