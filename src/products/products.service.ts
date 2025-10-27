@@ -55,7 +55,7 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
+    await this.findOne(id);
 
     if(updateProductDto.name) {
       const existing = await this.productRepository.findOne({

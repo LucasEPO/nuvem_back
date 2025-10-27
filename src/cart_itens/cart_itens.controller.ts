@@ -19,16 +19,16 @@ export class CartItensController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cartItensService.findOne(+id);
+    return this.cartItensService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCartItenDto: UpdateCartItemDto) {
-    return this.cartItensService.update(+id, updateCartItenDto);
+    return this.cartItensService.update(id, updateCartItenDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cartItensService.remove(+id);
+    return this.cartItensService.remove(id);
   }
 }
