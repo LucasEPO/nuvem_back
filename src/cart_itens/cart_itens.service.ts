@@ -21,28 +21,32 @@ export class CartItensService {
   async create(createCartItemDto: CreateCartItemDto) {
     const [cart, print, product] = await Promise.all([
       this.cartService.findOne(createCartItemDto.fk_cart_item_cart),
-      this.printService.findOne(createCartItemDto.fk_cart_item_print),
-      this.productService.findOne(createCartItemDto.fk_cart_item_product),
+      createCartItemDto.fk_cart_item_print
+        ? this.printService.findOne(createCartItemDto.fk_cart_item_print)
+        : Promise.resolve(null),
+      createCartItemDto.fk_cart_item_product
+        ? this.productService.findOne(createCartItemDto.fk_cart_item_product)
+        : Promise.resolve(null),
     ]);
 
-    if (!cart) 
-      throw new NotFoundException('Carrinho não encontrado');
-    if (!print) 
-      throw new NotFoundException('Estampa não encontrada');
-    if (!product) 
-      throw new NotFoundException('Produto não encontrado');
-
-    const cartItem = this.cartItemRepository.create(createCartItemDto);
+    const cartItem = this.cartItemRepository.create({
+      ...createCartItemDto,
+      cart,
+      print,
+      product,
+    } as any);
+    
     return await this.cartItemRepository.save(cartItem);
   }
 
   async findAll() {
-    return await this.cartItemRepository.find();
+    return await this.cartItemRepository.find({relations: ['cart', 'print', 'product']});
   }
 
   async findOne(id: string) {
     const cartItem = await this.cartItemRepository.findOne({
-      where: { cart_item_id: id }
+      where: { cart_item_id: id },
+      relations: ['cart', 'print', 'product']
     });
 
     if(!cartItem)
@@ -52,46 +56,18 @@ export class CartItensService {
   }
 
   async update(id: string, updateCartItemDto: UpdateCartItemDto) {
-    await this.findOne(id);
+    const cartItem = await this.findOne(id);
 
-    const validations: Promise<any>[] = [];
+    if (updateCartItemDto.fk_cart_item_print) 
+      cartItem.print = await this.printService.findOne(updateCartItemDto.fk_cart_item_print);
+    
+    if (updateCartItemDto.fk_cart_item_product) 
+      cartItem.product = await this.productService.findOne(updateCartItemDto.fk_cart_item_product);
+    
+    if (updateCartItemDto.quantity) 
+      cartItem.quantity = updateCartItemDto.quantity;
 
-    if (updateCartItemDto.fk_cart_item_cart) {
-      validations.push(
-        this.cartService
-          .findOne(updateCartItemDto.fk_cart_item_cart)
-          .then(cart => {
-            if (!cart)
-              throw new NotFoundException('Carrinho não encontrado');
-          }),
-      );
-    }
-
-    if (updateCartItemDto.fk_cart_item_print) {
-      validations.push(
-        this.printService
-          .findOne(updateCartItemDto.fk_cart_item_print)
-          .then(print => {
-            if (!print)
-              throw new NotFoundException('Estampa não encontrada');
-          }),
-      );
-    }
-
-    if (updateCartItemDto.fk_cart_item_product) {
-      validations.push(
-        this.productService
-          .findOne(updateCartItemDto.fk_cart_item_product)
-          .then(product => {
-            if (!product)
-              throw new NotFoundException('Produto não encontrado');
-          }),
-      );
-    }
-
-    if (validations.length > 0) await Promise.all(validations);
-
-    await this.cartItemRepository.update(id, updateCartItemDto);
+    await this.cartItemRepository.save(cartItem);
     return this.findOne(id);
   }
 

@@ -9,7 +9,7 @@ export class CartItem {
     cart_item_id: string;
 
     @Column({ type: 'int', unsigned: true })
-    quantity: number;
+    quantity?: number;
 
     @CreateDateColumn({
         type: 'datetime',
@@ -28,11 +28,11 @@ export class CartItem {
 
     @ManyToOne(() => Print, (print) => print.cart_itens, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'fk_cart_item_print' })
-    print: Print;
+    print?: Print;
 
     @ManyToOne(() => Product, (product) => product.cart_itens, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'fk_cart_item_product' })
-    product: Product;
+    product?: Product;
 
     @ManyToOne(() => Cart, (cart) => cart.cart_itens, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'fk_cart_item_cart' })
