@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,6 +48,16 @@ export class CategoriesService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    if (Object.keys(updateCategoryDto).length === 0)
+      throw new BadRequestException(`Nenhum campo foi passado para atualização`);
+
+    const existing = await this.categoryRepository.findOne({
+      where: { name: updateCategoryDto.name }
+    });
+
+    if(existing)
+      throw new ConflictException(`A categoria "${updateCategoryDto.name}" já existe.`);
+
     await this.categoryRepository.update(id, updateCategoryDto);
 
     return this.findOne(id);

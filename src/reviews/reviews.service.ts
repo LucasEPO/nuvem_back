@@ -14,8 +14,7 @@ export class ReviewsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createReviewDto: CreateReviewDto) {
-    //verificar uso do uuid se precisa ser convertido
+  async create(createReviewDto: CreateReviewDto) {    
     const user = await this.usersService.findOne(createReviewDto.fk_review_user);
     
     if (!user) 
