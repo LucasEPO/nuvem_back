@@ -28,10 +28,10 @@ export class CreateProductDto {
     size?: string;
 
     @IsNotEmpty()
-    @IsUUID('4',)
-    fk_product_collection: string;
+    @IsNumber()
+    fk_product_collection: number;
 
     @IsNotEmpty()
-    @IsUUID('4')
-    fk_product_category: string;
+    @IsNumber()
+    fk_product_category: number;
 }

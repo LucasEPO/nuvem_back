@@ -5,11 +5,11 @@ export class CreateCartItemDto {
     quantity: number;
 
     @IsUUID('4')
-    fk_cart_iten_print: string;
+    fk_cart_item_print: string;
     
     @IsUUID('4')
-    fk_cart_iten_product: string;
+    fk_cart_item_product: string;
     
     @IsUUID('4')
-    fk_cart_iten_cart: string;
+    fk_cart_item_cart: string;
 }
