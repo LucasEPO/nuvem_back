@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from './entities/cart.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class CartsService {
@@ -18,10 +17,11 @@ export class CartsService {
   async create(createCartDto: CreateCartDto) {
     const user = await this.usersService.findOne(createCartDto.fk_cart_user);
     
-    if (!user)
-      throw new NotFoundException('Usuário não encontrado');
+    if (!user) 
+      throw new NotFoundException(`Usuário com id ${createCartDto.fk_cart_user} não encontrado.`);
 
     const cart = this.cartRepository.create({user});
+
     return await this.cartRepository.save(cart);
   }
 
@@ -41,19 +41,7 @@ export class CartsService {
   }
 
   async update(id: string, updateCartDto: UpdateCartDto) {
-    await this.findOne(id);
-
-    const updateData: Partial<Cart> = {};
-
-    if (updateCartDto.fk_cart_user) {
-      const newUser = await this.usersService.findOne(updateCartDto.fk_cart_user);
-      if (!newUser) 
-        throw new NotFoundException('Usuário não encontrado');
-
-      updateData['fk_cart_user'] = updateCartDto.fk_cart_user;
-    }
-
-    await this.cartRepository.update(id, updateData);
+    await this.cartRepository.update(id, updateCartDto);
 
     return this.findOne(id);
   }
