@@ -51,12 +51,14 @@ export class CategoriesService {
     if (Object.keys(updateCategoryDto).length === 0)
       throw new BadRequestException(`Nenhum campo foi passado para atualização`);
 
-    const existing = await this.categoryRepository.findOne({
-      where: { name: updateCategoryDto.name }
-    });
-
-    if(existing)
-      throw new ConflictException(`A categoria "${updateCategoryDto.name}" já existe.`);
+    if(updateCategoryDto.name) {
+      const existing = await this.categoryRepository.findOne({
+        where: { name: updateCategoryDto.name }
+      });
+      
+      if(existing)
+        throw new ConflictException(`A categoria "${updateCategoryDto.name}" já existe.`);
+    }
 
     await this.categoryRepository.update(id, updateCategoryDto);
 

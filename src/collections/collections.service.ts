@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,8 +24,8 @@ export class CollectionsService {
     return this.collectionRepository.save(collection);
   }
 
-  findAll() {
-    return this.collectionRepository.find();
+  async findAll() {
+    return await this.collectionRepository.find();
   }
 
   async findOne(id: number) {
@@ -47,6 +47,18 @@ export class CollectionsService {
   }
 
   async update(id: number, updateCollectionDto: UpdateCollectionDto) {
+    if (Object.keys(updateCollectionDto).length === 0)
+      throw new BadRequestException(`Nenhum campo foi passado para atualização`);
+
+    if(updateCollectionDto.name) {
+      const existing = await this.collectionRepository.findOne({
+        where: { name: updateCollectionDto.name }
+      });
+  
+      if(existing)
+        throw new ConflictException(`A coleção "${updateCollectionDto.name}" já existe.`);
+    }
+
     await this.collectionRepository.update(id, updateCollectionDto);
     
     return this.findOne(id);
