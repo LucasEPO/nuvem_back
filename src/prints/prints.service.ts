@@ -13,18 +13,12 @@ export class PrintsService {
   ) {}
 
   async create(createPrintDto: CreatePrintDto) {
-    const existing = await this.printRepository.findOne({
-      where: { code: createPrintDto.code },
+    const newCode = await this.createCode(createPrintDto.type);
+
+    const print = this.printRepository.create({
+      ...createPrintDto,
+      code: newCode,
     });
-        
-    if (existing)
-      throw new ConflictException(`A estampa "${createPrintDto.code}" já existe.`);
-
-    const validTypes = Object.values(PrintType);
-    if (!validTypes.includes(createPrintDto.type))
-      throw new BadRequestException(`Tipo inválido: "${createPrintDto.type}"`)
-
-    const print = this.printRepository.create(createPrintDto);
     return this.printRepository.save(print);
   }
 
@@ -51,14 +45,25 @@ export class PrintsService {
   }
 
   async update(id: number, updatePrintDto: UpdatePrintDto) {
-    await this.printRepository.update(id, updatePrintDto);
+    delete updatePrintDto.code;
+    if (Object.keys(updatePrintDto).length === 0)
+      throw new BadRequestException(`Nenhum campo foi passado para atualização`);
 
-    if (updatePrintDto.type !== undefined) {
-      const validTypes = Object.values(PrintType);
-      if (!validTypes.includes(updatePrintDto.type)) {
-        throw new BadRequestException(`Tipo inválido: "${updatePrintDto.type}"`);
-      }
+    if(updatePrintDto.type) {
+      const newCode = await this.createCode(updatePrintDto.type);
+      updatePrintDto.code = newCode;
     }
+
+    const notEmptyFields = ["name", "image_url"];
+
+    Object.keys(updatePrintDto).forEach(key => {
+      if (notEmptyFields.includes(key)) {
+        if (updatePrintDto[key].length === 0) 
+          throw new BadRequestException(`Campo ${key} precisa de valor`);
+      }
+    });
+    
+    await this.printRepository.update(id, updatePrintDto);
     return this.findOne(id);
   }
 
@@ -66,5 +71,32 @@ export class PrintsService {
     const print = await this.findOne(id);
     
     return this.printRepository.remove(print);
+  }
+
+  async createCode(type: PrintType): Promise<string> {
+    const prefixMapCode = {
+      ANIME: 'ANM',
+      GEEK: 'GEEK',
+      EXCLUSIVA: 'EXC'
+    }
+
+    const prefix = prefixMapCode[type];
+    if(!prefix) 
+      throw new BadRequestException(`Tipo de estampa inválido: ${type}`);
+
+    const lastPrint = await this.printRepository.findOne({
+      where: { type: type },
+      order: { code: 'DESC' },
+    });
+
+    let nextNumber = 1;
+    if (lastPrint && lastPrint.code) {
+      const lastNumber = parseInt(lastPrint.code.split('-')[1]);
+      if (!isNaN(lastNumber)) 
+        nextNumber = lastNumber + 1;
+    }
+
+    const code = `${prefix}-${nextNumber.toString().padStart(4, '0')}`;
+    return code;
   }
 }

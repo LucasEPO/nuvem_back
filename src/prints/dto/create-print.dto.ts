@@ -7,11 +7,6 @@ export class CreatePrintDto {
     @MaxLength(255)
     name: string;
     
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(10)
-    code: string;
-    
     @IsEnum(PrintType)
     @IsNotEmpty()
     type: PrintType;

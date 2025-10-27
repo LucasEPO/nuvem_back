@@ -63,7 +63,7 @@ export class UsersService {
 
   async updateByEmail(email: string, updateUserDto: UpdateUserDto) {
     email = email.toLowerCase();
-    const notNullFields = ["name", "password"];
+    const notEmptyFields = ["name", "password"];
 
     if (Object.keys(updateUserDto).length === 0)
       throw new BadRequestException(`Nenhum campo foi passado para atualização`);
@@ -78,7 +78,7 @@ export class UsersService {
     }
 
     Object.keys(updateUserDto).forEach(key => {
-      if (notNullFields.includes(key)) {
+      if (notEmptyFields.includes(key)) {
         if (updateUserDto[key].length === 0) 
           throw new BadRequestException(`Campo ${key} precisa de valor`);
       }

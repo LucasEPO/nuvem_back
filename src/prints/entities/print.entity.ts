@@ -2,9 +2,9 @@ import { CartItem } from "src/cart_itens/entities/cart_item_entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum PrintType {
-  ANIME = 'anime',
-  GEEK = 'geek',
-  EXCLUSIVA = 'exclusiva',
+  ANIME = 'ANIME',
+  GEEK = 'GEEK',
+  EXCLUSIVA = 'EXCLUSIVA',
 }
 
 @Entity('prints')
