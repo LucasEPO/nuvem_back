@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,8 +25,8 @@ export class ReviewsService {
     return await this.reviewRepository.save(review);
   }
 
-  findAll() {
-    return this.reviewRepository.find();
+  async findAll() {
+    return await this.reviewRepository.find();
   }
 
   async findOne(id: number) {
@@ -39,6 +39,9 @@ export class ReviewsService {
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto) {
+    if (Object.keys(updateReviewDto).length === 0)
+      throw new BadRequestException(`Nenhum campo foi passado para atualização`);
+    
     await this.reviewRepository.update(id, updateReviewDto);
     
     return this.findOne(id);
