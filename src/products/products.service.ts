@@ -28,24 +28,24 @@ export class ProductsService {
       this.collectionService.findOne(createProductDto.fk_product_category),
       this.categoryService.findOne(createProductDto.fk_product_category)
     ]);
-    
-    if (!collection) 
-      throw new NotFoundException('Coleção não encontrada');
-    if (!category) 
-      throw new NotFoundException('Categoria não encontrada');
 
-    const product = this.productRepository.create(createProductDto);
+    const product = this.productRepository.create({
+      ...createProductDto,
+      collection,
+      category
+    });
 
     return await this.productRepository.save(product);
   }
 
   async findAll() {
-    return await this.productRepository.find();
+    return await this.productRepository.find({relations:['category', 'collection']});
   }
 
   async findOne(id: string) {
     const product = await this.productRepository.findOne({
-      where: { product_id: id }
+      where: { product_id: id },
+      relations: ['category', 'collection']
     });
 
     if(!product)
@@ -55,7 +55,7 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    await this.findOne(id);
+    let product = await this.findOne(id);
 
     if(updateProductDto.name) {
       const existing = await this.productRepository.findOne({
@@ -66,33 +66,18 @@ export class ProductsService {
         throw new BadRequestException('Nome de produto já cadastrado');
     }
 
-    const validations: Promise<any>[] = [];
-
-    if (updateProductDto.fk_product_category) {
-      validations.push(
-        this.categoryService
-          .findOne(updateProductDto.fk_product_category)
-          .then(category => {
-            if (!category)
-              throw new NotFoundException('Categoria não encontrada');
-          }),
-      );
-    }
-
-    if (updateProductDto.fk_product_collection) {
-      validations.push(
-        this.collectionService
-          .findOne(updateProductDto.fk_product_collection)
-          .then(collection => {
-            if (!collection)
-              throw new NotFoundException('Coleção não encontrada');
-          }),
-      );
-    }
-
-    if (validations.length > 0) await Promise.all(validations);
+    if(updateProductDto.fk_product_category)
+      product.category = await this.categoryService.findOne(updateProductDto.fk_product_category);
     
-    await this.productRepository.update(id, updateProductDto);
+    if(updateProductDto.fk_product_collection)
+      product.collection = await this.collectionService.findOne(updateProductDto.fk_product_collection);
+    
+    Object.keys(updateProductDto).forEach(key => {
+      console.log(key);
+      if(key !== 'collection' && key !== 'category' )
+        product[key] = updateProductDto[key]
+    })
+    await this.productRepository.save(product);
     return this.findOne(id);
   }
 
