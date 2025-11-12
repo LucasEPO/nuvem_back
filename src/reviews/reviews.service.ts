@@ -20,13 +20,21 @@ export class ReviewsService {
     if (!user) 
       throw new NotFoundException(`Usuário com id ${createReviewDto.fk_review_user} não encontrado.`);
 
-    const review = this.reviewRepository.create(createReviewDto);
+    const review = this.reviewRepository.create({...createReviewDto, user});
 
     return await this.reviewRepository.save(review);
   }
 
   async findAll() {
-    return await this.reviewRepository.find();
+    return await this.reviewRepository.find({
+      relations: ['user'],
+      select: {
+        user: {
+          user_id: true,
+          name: true,
+        },
+      },
+});
   }
 
   async findOne(id: number) {

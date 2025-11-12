@@ -39,7 +39,13 @@ export class ProductsService {
   }
 
   async findAll() {
-    return await this.productRepository.find({relations:['category', 'collection']});
+    return await this.productRepository.find({
+      relations:['category', 'collection'],
+      select: {
+        category: { category_id: true, name: true },
+        collection: { collection_id: true, name: true },  
+      },
+    });
   }
 
   async findOne(id: string) {
