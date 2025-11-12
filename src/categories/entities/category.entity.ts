@@ -9,6 +9,9 @@ export class Category {
   @Column({ unique: true })
   name: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  image_url: string;
+
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 }
