@@ -9,6 +9,7 @@ export class CartItensController {
 
   @Post()
   create(@Body() createCartItenDto: CreateCartItemDto) {
+    console.log('edfwe');
     return this.cartItensService.create(createCartItenDto);
   }
 

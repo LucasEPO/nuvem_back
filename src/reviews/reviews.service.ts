@@ -34,7 +34,7 @@ export class ReviewsService {
           name: true,
         },
       },
-});
+    });
   }
 
   async findOne(id: number) {
