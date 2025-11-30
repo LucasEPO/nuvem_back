@@ -16,6 +16,9 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   password_hash: string;
 
+  @Column({type: 'boolean'})
+  is_adm: boolean;
+
   @CreateDateColumn({
     type: 'datetime',
     precision: 3,
