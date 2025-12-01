@@ -23,7 +23,7 @@ async function bootstrap() {
   .build();
 
   app.enableCors({
-    origin: 'https://nuvem-front-git-main-lucasepos-projects.vercel.app',
+    origin: 'https://nuvem-front.vercel.app',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     allowedHeaders: 'Content-Type, Authorization',
   });
